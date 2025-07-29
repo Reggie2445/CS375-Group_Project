@@ -68,3 +68,21 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Get an Access Token Using `curl`
+
+Replace `your-client-id` and `your-client-secret` with your actual credentials:
+
+```bash
+curl -X POST "https://accounts.spotify.com/api/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials&client_id=your-client-id&client_secret=your-client-secret"
+
+## Get a Spotify Artist (using `curl`)
+
+To retrieve information about a specific artist from the Spotify Web API, use the following `curl` command:
+
+```bash
+curl "https://api.spotify.com/v1/artists/4Z8W4fKeB5YxbusRsdQVPb" \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
