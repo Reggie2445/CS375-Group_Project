@@ -8,7 +8,7 @@ const PostFeed = ({ refreshTrigger }) => {
 
   return (
     <div>
-      
+      Feed of posts will be displayed here :)
     </div>
   );
 };
