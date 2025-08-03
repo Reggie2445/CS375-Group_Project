@@ -1,8 +1,11 @@
 // src/pages/AuthPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, Input, Button, Typography} from "antd";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { Form, Input, Button, Typography } from "antd";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../firebase";
 import { Alert } from "antd";
 const { Title } = Typography;
@@ -12,10 +15,14 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [form] = Form.useForm();  
-
+  const [form] = Form.useForm();
 
   const navigate = useNavigate();
+
+  const isSpotifyAuthorized = () => {
+    const token = localStorage.getItem("spotify_access_token");
+    return !!token;
+  };
 
   const onFinish = async (values) => {
     const { email, password } = values;
@@ -26,8 +33,13 @@ const AuthPage = () => {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
         setSuccess("Successfully logged in!");
-        navigate("/main");
-        setLoading(false);
+        if (!isSpotifyAuthorized()) {
+          navigate("/spotify-auth");
+          setLoading(false);
+        } else {
+          navigate("/main");
+          setLoading(false);
+        }
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
         setSuccess("Account created successfully!");
@@ -40,12 +52,12 @@ const AuthPage = () => {
     }
   };
 
-  const changeForm = () =>{
+  const changeForm = () => {
     setIsLogin(!isLogin);
     form.resetFields();
     setError("");
     setSuccess("");
-  }
+  };
 
   return (
     <div style={{ maxWidth: 400, margin: "auto", marginTop: "120px" }}>
@@ -72,14 +84,14 @@ const AuthPage = () => {
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Please input your email!"}]}
+          rules={[{ required: true, message: "Please input your email!" }]}
         >
           <Input type="email" />
         </Form.Item>
         <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please input your password!"}]}
+          rules={[{ required: true, message: "Please input your password!" }]}
         >
           <Input.Password />
         </Form.Item>
