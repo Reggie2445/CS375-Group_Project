@@ -70,7 +70,7 @@ const CreatePost = ({ onPostCreated }) => {
       const data = await res.json();
       const tracks = data.tracks?.items || [];
       const options = tracks.map((track) => ({
-        value: track.id, 
+        value: track.id,
         label: `${track.name} - ${track.artists.map((a) => a.name).join(", ")} - ${track.album.name}`,
         title: track.name,
         artist: track.artists.map((a) => a.name).join(", "),
