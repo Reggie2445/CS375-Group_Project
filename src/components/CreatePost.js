@@ -1,6 +1,6 @@
 // src/components/CreatePost.js
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Rate, message, Space } from 'antd';
+import { Form, Input, Button, Card, Rate, message, Space, AutoComplete } from 'antd';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
@@ -11,6 +11,11 @@ const CreatePost = ({ onPostCreated }) => {
   const [user] = useAuthState(auth);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [songOptions, setSongOptions] = useState([]);
+
+  const token = localStorage.getItem("spotify_access_token");
+
+
 
   const onFinish = async (values) => {
     if (!user) {
@@ -34,10 +39,9 @@ const CreatePost = ({ onPostCreated }) => {
       };
 
       await addDoc(collection(db, 'posts'), postData);
-      
-      message.success('Song recommendation posted successfully!');
+
       form.resetFields();
-      
+
       if (onPostCreated) {
         onPostCreated();
       }
@@ -48,6 +52,48 @@ const CreatePost = ({ onPostCreated }) => {
       setLoading(false);
     }
   };
+
+  const searchSongs = async (query) => {
+    if (!query) return;
+
+    try {
+      const token = localStorage.getItem("spotify_access_token");
+      const res = await fetch(
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+      const tracks = data.tracks?.items || [];
+      const options = tracks.map((track) => ({
+        value: track.id, 
+        label: `${track.name} - ${track.artists.map((a) => a.name).join(", ")} - ${track.album.name}`,
+        title: track.name,
+        artist: track.artists.map((a) => a.name).join(", "),
+        album: track.album.name,
+      }));
+      setSongOptions(options);
+    } catch (err) {
+      console.error("Spotify search failed:", err);
+    }
+  };
+
+
+  const selectSong = (selectedId) => {
+    const track = songOptions.find(option => option.value === selectedId);
+    if (!track) return;
+    form.setFieldsValue({
+      songTitle: track.title,
+      artist: track.artist,
+      album: track.album,
+    });
+  };
+
+  console.log(token);
 
   return (
     <Card title="Share a Song Recommendation" style={{ marginBottom: 20 }}>
@@ -64,9 +110,16 @@ const CreatePost = ({ onPostCreated }) => {
             rules={[{ required: true, message: 'Please enter the song title!' }]}
             style={{ flex: 1, marginRight: 8 }}
           >
-            <Input placeholder="Enter song title" />
+            <AutoComplete
+              options={songOptions}
+              onSearch={searchSongs}
+              onSelect={selectSong}
+              placeholder="Enter song title"
+            >
+              <Input />
+            </AutoComplete>
           </Form.Item>
-          
+
           <Form.Item
             name="artist"
             label="Artist"
