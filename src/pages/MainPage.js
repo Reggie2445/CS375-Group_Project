@@ -5,6 +5,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   PlusOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { signOut } from "firebase/auth";
@@ -13,6 +14,7 @@ import { auth } from "../firebase";
 import CreatePost from "../components/CreatePost";
 import PostFeed from "../components/PostFeed";
 import UserPosts from "../components/UserPosts";
+import FriendsPage from "../components/FriendsPage";
 import env from "../env.json";
 
 const { Header, Content, Sider } = Layout;
@@ -113,6 +115,11 @@ const MainPage = () => {
       label: "Create Post",
     },
     {
+      key: "friends",
+      icon: <TeamOutlined />,
+      label: "Friends",
+    },
+    {
       key: "profile",
       icon: <UserOutlined />,
       label: "My Posts",
@@ -125,6 +132,8 @@ const MainPage = () => {
         return <PostFeed refreshTrigger={refreshTrigger} />;
       case "create":
         return <CreatePost onPostCreated={handlePostCreated} />;
+      case "friends":
+        return <FriendsPage />;
       case "profile":
         return <UserPosts />;
       default:
@@ -172,6 +181,7 @@ const MainPage = () => {
           <Title level={3} style={{ margin: 0 }}>
             {selectedKey === "feed" && "Song Recommendations Feed"}
             {selectedKey === "create" && "Share a Song"}
+            {selectedKey === "friends" && "Friends & Social"}
             {selectedKey === "profile" && "Your Music Collection"}
           </Title>
 

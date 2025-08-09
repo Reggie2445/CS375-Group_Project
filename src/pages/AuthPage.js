@@ -6,7 +6,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from "../firebase";
 import { Alert } from "antd";
 const { Title } = Typography;
 
@@ -31,7 +32,14 @@ const AuthPage = () => {
     setSuccess("");
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Create/update user document in Firestore on login too
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+          email: email.toLowerCase(),
+          lastLoginAt: serverTimestamp()
+        }, { merge: true });
+        
         setSuccess("Successfully logged in!");
         if (!isSpotifyAuthorized()) {
           navigate("/spotify-auth");
@@ -41,7 +49,15 @@ const AuthPage = () => {
           setLoading(false);
         }
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Create user document in Firestore
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+          email: email.toLowerCase(),
+          createdAt: serverTimestamp(),
+          lastLoginAt: serverTimestamp()
+        });
+        
         setSuccess("Account created successfully!");
         setLoading(false);
       }
