@@ -1,4 +1,3 @@
-// Updated server.js auth sections
 import express from "express";
 import axios from "axios";
 import cookieSession from "cookie-session";
@@ -208,7 +207,6 @@ app.get("/songs", async (req, res) => {
     const token = await ensureAccessToken(req);
     const query = req.query.q || "";
     
-    console.log("Searching for:", query);
     const r = await axios.get(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
       { headers: { Authorization: `Bearer ${token}` } }

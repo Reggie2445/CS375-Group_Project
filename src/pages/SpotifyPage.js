@@ -1,4 +1,3 @@
-// SpotifyPage.jsx (simplified)
 import { Layout, Typography, Button } from "antd";
 const { Header, Content } = Layout;
 const { Title } = Typography;

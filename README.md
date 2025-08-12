@@ -86,3 +86,4 @@ To retrieve information about a specific artist from the Spotify Web API, use th
 curl "https://api.spotify.com/v1/artists/4Z8W4fKeB5YxbusRsdQVPb" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 
+To run the application in development please run the server script as before running the main start script
