@@ -15,77 +15,15 @@ import CreatePost from "../components/CreatePost";
 import PostFeed from "../components/PostFeed";
 import UserPosts from "../components/UserPosts";
 import FriendsPage from "../components/FriendsPage";
-import env from "../env.json";
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
-
-async function getProfile() {
-  let accessToken = localStorage.getItem("spotify_access_token");
-
-  const response = await fetch("https://api.spotify.com/v1/me", {
-    headers: {
-      Authorization: "Bearer " + accessToken,
-    },
-  });
-
-  const data = await response.json();
-  console.log("Spotify Data", data);
-}
-
-const getToken = async (code) => {
-  const codeVerifier = localStorage.getItem("code_verifier");
-
-  const url = "https://accounts.spotify.com/api/token";
-  const payload = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      client_id: env.client_id,
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: env.redirect_uri,
-      code_verifier: codeVerifier,
-    }),
-  };
-
-  try {
-    const res = await fetch(url, payload);
-    const data = await res.json();
-
-    if (data.access_token) {
-      localStorage.setItem("spotify_access_token", data.access_token);
-      message.success("Spotify authorized!");
-
-      getProfile();
-
-      window.history.replaceState({}, document.title, "/main");
-    } else {
-      console.error("Token error:", data);
-      message.error("Failed to get Spotify access token");
-    }
-  } catch (err) {
-    console.error("Fetch error:", err);
-    message.error("Network error getting token");
-  }
-};
 
 const MainPage = () => {
   const [user, loading] = useAuthState(auth);
   const [selectedKey, setSelectedKey] = useState("feed");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-
-    if (code) {
-      getToken(code);
-    }
-  }, []);
 
   const handleLogout = async () => {
     try {
