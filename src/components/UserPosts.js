@@ -79,7 +79,7 @@ const UserPosts = () => {
   return (
     <div>
       <Title level={3} style={{ marginBottom: 20 }}>
-        Your Song Recommendations ({userPosts.length})
+        Your Recommendations ({userPosts.length})
       </Title>
       
       {userPosts.length === 0 ? (
