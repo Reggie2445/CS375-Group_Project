@@ -117,10 +117,10 @@ const MainPage = () => {
           }}
         >
           <Title level={3} style={{ margin: 0 }}>
-            {selectedKey === "feed" && "Song Recommendations Feed"}
-            {selectedKey === "create" && "Share a Song"}
-            {selectedKey === "friends" && "Friends & Social"}
-            {selectedKey === "profile" && "Your Music Collection"}
+            {selectedKey === "feed" && "Your Feed"}
+            {selectedKey === "create" && "Create a Post"}
+            {selectedKey === "friends" && "Manage Friends"}
+            {selectedKey === "profile" && "Your Posts"}
           </Title>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>

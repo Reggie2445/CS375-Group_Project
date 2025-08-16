@@ -202,21 +202,26 @@ app.get("/auth/logout", (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/songs", async (req, res) => {
+app.get("/search", async (req, res) => {
   try {
     const token = await ensureAccessToken(req);
-    const query = req.query.q || "";
-    
-    const r = await axios.get(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    
+    let { q = "", type = "track", limit = "10" } = req.query;
+
+    type = String(type).toLowerCase();
+    if (!["track", "album", "playlist"].includes(type)) {
+      return res.status(400).json({ error: "Invalid type. Use track|album|playlist" });
+    }
+    if (!q) return res.status(400).json({ error: "Missing q" });
+    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=${encodeURIComponent(limit)}`;
+    const r = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+
     res.json(r.data);
   } catch (e) {
-    console.error("Songs endpoint error:", e.message);
-    res.status(401).json({ error: "Not authenticated or Spotify error", details: e.message });
+    const status = e.response?.status || 500;
+    res.status(status).json({ error: e.message, details: e.response?.data });
   }
 });
+
+
 
 app.listen(8080, () => console.log("Server running on http://127.0.0.1:8080"));
