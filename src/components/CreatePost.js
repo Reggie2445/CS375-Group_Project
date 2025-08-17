@@ -185,6 +185,7 @@ const CreatePost = ({ onPostCreated }) => {
         createdAt: serverTimestamp(),
         likes: 0,
         likedBy: [],
+        comments: [],
         spotify: {
           id: values.spotifyId || null,
           url: values.spotifyUrl || null,

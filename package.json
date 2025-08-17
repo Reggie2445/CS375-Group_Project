@@ -19,6 +19,12 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+
+  "comments": {
+    "start_note": "Remember to update version before release",
+    "start": "start: react-scripts start"
+  },
+
   "scripts": {
     "start": "HOST=127.0.0.1 react-scripts start",
     "server": "node src/server.js",

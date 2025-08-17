@@ -48,6 +48,8 @@ const AuthPage = () => {
           navigate("/main");
           setLoading(false);
         }
+        // navigate("/main");
+        // setLoading(false);
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         
