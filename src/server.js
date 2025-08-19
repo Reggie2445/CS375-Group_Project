@@ -222,6 +222,19 @@ app.get("/search", async (req, res) => {
   }
 });
 
+app.get("/profile", async (req, res) => {
+  try {
+    const token = await ensureAccessToken(req);
+    const url = "https://api.spotify.com/v1/me";
+    const r = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+    res.json(r.data);
+    console.log("Profile data:", r.data);
+  } catch (e) {
+    const status = e.response?.status || 500;
+    res.status(status).json({ error: e.message, details: e.response?.data });
+  
+}});
+
 
 
 app.listen(8080, () => console.log("Server running on http://127.0.0.1:8080"));
