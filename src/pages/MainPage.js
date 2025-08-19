@@ -60,7 +60,7 @@ const MainPage = () => {
     {
       key: "profile",
       icon: <UserOutlined />,
-      label: "My Posts",
+      label: "Profile",
     },
   ];
 

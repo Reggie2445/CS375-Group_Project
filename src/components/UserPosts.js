@@ -5,6 +5,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { collection, query, where, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
+import SpotifyMiniProfile from './spotifyMiniProfile';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -141,6 +142,7 @@ const UserPosts = () => {
 
   return (
     <div>
+      <SpotifyMiniProfile />
       <Title level={3} style={{ marginBottom: 20 }}>
         Your Recommendations ({userPosts.length})
       </Title>
