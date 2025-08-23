@@ -38,6 +38,18 @@ const UserPosts = () => {
         id: doc.id,
         ...doc.data()
       }));
+      
+      postsData.sort((a, b) => {
+        const aTime = a.updatedAt || a.createdAt;
+        const bTime = b.updatedAt || b.createdAt;
+        
+        if (!aTime && !bTime) return 0;
+        if (!aTime) return 1;
+        if (!bTime) return -1;
+        
+        return bTime.toMillis() - aTime.toMillis();
+      });
+      
       setUserPosts(postsData);
       setLoading(false);
     }, (error) => {
@@ -53,6 +65,7 @@ const UserPosts = () => {
     try {
       await deleteDoc(doc(db, 'posts', postId));
       message.success('Post deleted successfully');
+      window.location.reload();
     } catch (error) {
       console.error('Error deleting post:', error);
       message.error('Failed to delete post');
@@ -87,16 +100,19 @@ const UserPosts = () => {
 
   const handleEditSave = async (postId) => {
     try {
-      const postRef = doc(db, 'posts', postId);
+      const postRef = doc(db, 'posts', postId);      
       await updateDoc(postRef, {
         songTitle: editForm.songTitle,
         artist: editForm.artist,
         album: editForm.album,
         review: editForm.review,
-        rating: editForm.rating
+        rating: editForm.rating,
+        updatedAt: new Date()
       });
+      
       message.success('Post updated successfully');
-      setEditingPostId(null);
+      
+      window.location.reload();
     } catch (error) {
       console.error('Error updating post:', error);
       message.error('Failed to update post');
@@ -119,6 +135,13 @@ const UserPosts = () => {
     
     const date = timestamp.toDate();
     return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getPostTimestamp = (post) => {
+    if (post.updatedAt) {
+      return `Updated ${formatDate(post.updatedAt)}`;
+    }
+    return `Posted ${formatDate(post.createdAt)}`;
   };
 
   if (loading) {
@@ -188,7 +211,7 @@ const UserPosts = () => {
               >
                 <div style={{ marginBottom: 8 }}>
                   <Text type="secondary" style={{ fontSize: '12px' }}>
-                    Editing (Posted {formatDate(post.createdAt)})
+                    Editing ({getPostTimestamp(post)})
                   </Text>
                 </div>
                 
@@ -289,7 +312,7 @@ const UserPosts = () => {
               <>
                 <div style={{ marginBottom: 8 }}>
                   <Text type="secondary" style={{ fontSize: '12px' }}>
-                    Posted {formatDate(post.createdAt)}
+                    {getPostTimestamp(post)}
                   </Text>
                 </div>
                 
