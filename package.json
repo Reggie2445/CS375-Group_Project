@@ -22,7 +22,8 @@
 
   "comments": {
     "start_note": "Remember to update version before release",
-    "start": "start: react-scripts start"
+    "windows_start": "react-scripts start",
+    "linux_start": "HOST=127.0.0.1 react-scripts start"
   },
 
   "scripts": {
