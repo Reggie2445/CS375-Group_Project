@@ -1,7 +1,7 @@
 // src/components/PostFeed.js
 import React, { useState, useEffect } from 'react';
 import { Card, Rate, Button, Space, Avatar, Typography, message, Spin, Input, List } from 'antd';
-import { HeartOutlined, HeartFilled, UserOutlined, CommentOutlined } from '@ant-design/icons';
+import { HeartOutlined, HeartFilled, UserOutlined, CommentOutlined, ReloadOutlined } from '@ant-design/icons';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
@@ -154,6 +154,17 @@ const PostFeed = ({ refreshTrigger }) => {
 
   return (
     <div>
+      <div style={{ marginBottom: 16, textAlign: 'right' }}>
+        <Button 
+          type="primary" 
+          icon={<ReloadOutlined />}
+          onClick={() => window.location.reload()}
+          size="middle"
+        >
+          Refresh Feed
+        </Button>
+      </div>
+      
       {posts.map((post) => {
         const isLiked = user && post.likedBy && post.likedBy.includes(user.uid);
         
