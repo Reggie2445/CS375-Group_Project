@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Typography, Button, message } from "antd";
+import { Layout, Menu, Typography, Button, message, Badge } from "antd";
 import {
   HomeOutlined,
   UserOutlined,
@@ -10,7 +10,8 @@ import {
 import { useAuthState } from "react-firebase-hooks/auth";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import CreatePost from "../components/CreatePost";
 import PostFeed from "../components/PostFeed";
 import UserPosts from "../components/UserPosts";
@@ -23,7 +24,24 @@ const MainPage = () => {
   const [user, loading] = useAuthState(auth);
   const [selectedKey, setSelectedKey] = useState("feed");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const friendRequestsQuery = query(
+      collection(db, 'friendRequests'),
+      where('toUserId', '==', user.uid),
+      where('status', '==', 'pending')
+    );
+
+    const unsubscribe = onSnapshot(friendRequestsQuery, (snapshot) => {
+      setPendingRequestsCount(snapshot.docs.length);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -55,7 +73,11 @@ const MainPage = () => {
     {
       key: "friends",
       icon: <TeamOutlined />,
-      label: "Friends",
+      label: (
+        <Badge count={pendingRequestsCount} size="small" offset={[10, 0]}>
+          Friends
+        </Badge>
+      ),
     },
     {
       key: "profile",
