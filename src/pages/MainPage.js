@@ -15,6 +15,7 @@ import CreatePost from "../components/CreatePost";
 import PostFeed from "../components/PostFeed";
 import UserPosts from "../components/UserPosts";
 import FriendsPage from "../components/FriendsPage";
+import SpotifyTrendsPage from "../components/Trends";
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -62,6 +63,11 @@ const MainPage = () => {
       icon: <UserOutlined />,
       label: "Profile",
     },
+    {
+      key: "trends",
+      icon: <UserOutlined />,
+      label: "Trends",
+    },
   ];
 
   const renderContent = () => {
@@ -74,6 +80,8 @@ const MainPage = () => {
         return <FriendsPage />;
       case "profile":
         return <UserPosts />;
+      case "trends":
+        return <SpotifyTrendsPage/>;
       default:
         return <PostFeed refreshTrigger={refreshTrigger} />;
     }
@@ -121,6 +129,7 @@ const MainPage = () => {
             {selectedKey === "create" && "Create a Post"}
             {selectedKey === "friends" && "Manage Friends"}
             {selectedKey === "profile" && "Your Posts"}
+            {selectedKey === "trends" && "Your Music Trends"}
           </Title>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
