@@ -32,6 +32,8 @@ function loginScope() {
   return [
     "user-read-email",
     "user-read-private",
+    "user-top-read",
+    "user-read-recently-played",
   ].join(" ");
 }
 
@@ -188,7 +190,7 @@ app.get("/auth/status", (req, res) => {
   if (rec && Date.now() < rec.expiresAt - 5000) {
     res.json({ authenticated: true });
   } else {
-    res.status(401).json({ authenticated: false, reason: "No valid token" });
+    res.status(401).json({ authentifcated: false, reason: "No valid token" });
   }
 });
 
@@ -234,6 +236,43 @@ app.get("/profile", async (req, res) => {
     res.status(status).json({ error: e.message, details: e.response?.data });
   
 }});
+
+
+app.get("/spotify/top/:type", async (req, res) => {
+  try {
+    const token = await ensureAccessToken(req);
+    const { type } = req.params;
+    const { time_range = "short_term", limit = 25, offset = 0 } = req.query;
+
+    if (!["tracks", "artists"].includes(type)) {
+      return res.status(400).json({ error: "type must be 'tracks' or 'artists'" });
+    }
+
+    const url = `https://api.spotify.com/v1/me/top/${type}?time_range=${encodeURIComponent(time_range)}&limit=${encodeURIComponent(limit)}&offset=${encodeURIComponent(offset)}`;
+    const r = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+    res.json(r.data);
+    console.log(r.data);
+  } catch (e) {
+    const status = e.response?.status || 500;
+    res.status(status).json({ error: e.message, details: e.response?.data });
+  }
+
+
+});
+
+app.get("/spotify/recent", async (req, res) => {
+  try {
+    const token = await ensureAccessToken(req);
+    const { limit = 50 } = req.query;
+    const url = `https://api.spotify.com/v1/me/player/recently-played?limit=${encodeURIComponent(limit)}`;
+    const r = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+    res.json(r.data);
+    console.log(r.data);
+  } catch (e) {
+    const status = e.response?.status || 500;
+    res.status(status).json({ error: e.message, details: e.response?.data });
+  }
+});
 
 
 
