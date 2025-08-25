@@ -1,10 +1,37 @@
 // src/components/PostFeed.js
-import React, { useState, useEffect } from 'react';
-import { Card, Rate, Button, Space, Avatar, Typography, message, Spin, Input, List } from 'antd';
-import { HeartOutlined, HeartFilled, UserOutlined, CommentOutlined, ReloadOutlined } from '@ant-design/icons';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '../firebase';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  Rate,
+  Button,
+  Space,
+  Avatar,
+  Typography,
+  message,
+  Spin,
+  Input,
+  List,
+} from "antd";
+import {
+  HeartOutlined,
+  HeartFilled,
+  UserOutlined,
+  CommentOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  increment,
+} from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, db } from "../firebase";
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -18,115 +45,119 @@ const PostFeed = ({ refreshTrigger }) => {
 
   useEffect(() => {
     const postsQuery = query(
-      collection(db, 'posts'),
-      orderBy('createdAt', 'desc')
+      collection(db, "posts"),
+      orderBy("createdAt", "desc")
     );
 
-    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-      const postsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setPosts(postsData);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching posts:', error);
-      message.error('Failed to load posts');
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      postsQuery,
+      (snapshot) => {
+        const postsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPosts(postsData);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching posts:", error);
+        message.error("Failed to load posts");
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, [refreshTrigger]);
 
   const handleLike = async (postId, likedBy) => {
     if (!user) {
-      message.error('You must be logged in to like posts');
+      message.error("You must be logged in to like posts");
       return;
     }
 
     try {
-      const postRef = doc(db, 'posts', postId);
+      const postRef = doc(db, "posts", postId);
       const isLiked = likedBy.includes(user.uid);
 
       if (isLiked) {
         await updateDoc(postRef, {
           likes: increment(-1),
-          likedBy: arrayRemove(user.uid)
+          likedBy: arrayRemove(user.uid),
         });
       } else {
         await updateDoc(postRef, {
           likes: increment(1),
-          likedBy: arrayUnion(user.uid)
+          likedBy: arrayUnion(user.uid),
         });
       }
     } catch (error) {
-      console.error('Error updating like:', error);
-      message.error('Failed to update like');
+      console.error("Error updating like:", error);
+      message.error("Failed to update like");
     }
   };
 
   const handleComment = async (postId) => {
     const commentText = commentInputs[postId];
-    
+
     if (!user) {
-      message.error('You must be logged in to comment');
+      message.error("You must be logged in to comment");
       return;
     }
 
-    if (!commentText || commentText.trim() === '') {
-      message.error('Please enter a comment');
+    if (!commentText || commentText.trim() === "") {
+      message.error("Please enter a comment");
       return;
     }
 
     try {
-      const postRef = doc(db, 'posts', postId);
+      const postRef = doc(db, "posts", postId);
       const newComment = {
         id: Date.now().toString(),
         userId: user.uid,
         userEmail: user.email,
         text: commentText.trim(),
-        createdAt: new Date()
+        createdAt: new Date(),
       };
-      
+
       await updateDoc(postRef, {
-        comments: arrayUnion(newComment)
+        comments: arrayUnion(newComment),
       });
 
-      setCommentInputs(prev => ({
+      setCommentInputs((prev) => ({
         ...prev,
-        [postId]: ''
+        [postId]: "",
       }));
 
-      message.success('Comment added successfully');
+      message.success("Comment added successfully");
     } catch (error) {
-      console.error('Error adding comment:', error);
-      message.error('Failed to add comment');
+      console.error("Error adding comment:", error);
+      message.error("Failed to add comment");
     }
   };
 
   const handleCommentInputChange = (postId, value) => {
-    setCommentInputs(prev => ({
+    setCommentInputs((prev) => ({
       ...prev,
-      [postId]: value
+      [postId]: value,
     }));
   };
 
   const toggleComments = (postId) => {
-    setShowComments(prev => ({
+    setShowComments((prev) => ({
       ...prev,
-      [postId]: !prev[postId]
+      [postId]: !prev[postId],
     }));
   };
 
   const formatDate = (timestamp) => {
-    if (!timestamp) return 'Just now';
-    
+    if (!timestamp) return "Just now";
+
     const date = timestamp.toDate();
     const now = new Date();
     const diffInHours = (now - date) / (1000 * 60 * 60);
 
     if (diffInHours < 1) {
-      return 'Just now';
+      return "Just now";
     } else if (diffInHours < 24) {
       return `${Math.floor(diffInHours)} hours ago`;
     } else {
@@ -136,7 +167,7 @@ const PostFeed = ({ refreshTrigger }) => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 50 }}>
+      <div style={{ textAlign: "center", padding: 50 }}>
         <Spin size="large" />
       </div>
     );
@@ -145,8 +176,10 @@ const PostFeed = ({ refreshTrigger }) => {
   if (posts.length === 0) {
     return (
       <Card>
-        <div style={{ textAlign: 'center', padding: 20 }}>
-          <Text type="secondary">No posts yet. Be the first to share a song recommendation!</Text>
+        <div style={{ textAlign: "center", padding: 20 }}>
+          <Text type="secondary">
+            No posts yet. Be the first to share a song recommendation!
+          </Text>
         </div>
       </Card>
     );
@@ -154,9 +187,9 @@ const PostFeed = ({ refreshTrigger }) => {
 
   return (
     <div>
-      <div style={{ marginBottom: 16, textAlign: 'right' }}>
-        <Button 
-          type="primary" 
+      <div style={{ marginBottom: 16, textAlign: "right" }}>
+        <Button
+          type="primary"
           icon={<ReloadOutlined />}
           onClick={() => window.location.reload()}
           size="middle"
@@ -164,10 +197,11 @@ const PostFeed = ({ refreshTrigger }) => {
           Refresh Feed
         </Button>
       </div>
-      
+
       {posts.map((post) => {
+        console.log("Post Object", post);
         const isLiked = user && post.likedBy && post.likedBy.includes(user.uid);
-        
+
         return (
           <Card
             key={post.id}
@@ -175,7 +209,13 @@ const PostFeed = ({ refreshTrigger }) => {
             actions={[
               <Button
                 type="text"
-                icon={isLiked ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />}
+                icon={
+                  isLiked ? (
+                    <HeartFilled style={{ color: "#ff4d4f" }} />
+                  ) : (
+                    <HeartOutlined />
+                  )
+                }
                 onClick={() => handleLike(post.id, post.likedBy || [])}
               >
                 {post.likes || 0}
@@ -186,7 +226,7 @@ const PostFeed = ({ refreshTrigger }) => {
                 onClick={() => toggleComments(post.id)}
               >
                 {post.comments ? post.comments.length : 0}
-              </Button>
+              </Button>,
             ]}
           >
             <Card.Meta
@@ -194,64 +234,192 @@ const PostFeed = ({ refreshTrigger }) => {
               title={
                 <Space direction="vertical" size={0}>
                   <Text strong>{post.userEmail}</Text>
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>
                     {formatDate(post.createdAt)}
                   </Text>
                 </Space>
               }
               description={
                 <div style={{ marginTop: 8 }}>
-                  <Space direction="vertical" style={{ width: '100%' }} size={8}>
-                    <div>
-                      <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>
-                        {post.songTitle}
-                      </Text>
-                      <br />
-                      <Text type="secondary">by {post.artist}</Text>
-                      {post.album && (
-                        <>
-                          <br />
-                          <Text type="secondary" italic>from "{post.album}"</Text>
-                        </>
-                      )}
-                    </div>
-                    
-                    {post.rating > 0 && (
-                      <div>
-                        <Rate disabled defaultValue={post.rating} allowHalf />
-                        <Text style={{ marginLeft: 8 }}>({post.rating}/5)</Text>
+                  <Space
+                    direction="vertical"
+                    style={{ width: "100%" }}
+                    size={8}
+                  >
+                    {/* Top right: content type pill only (no timestamp here to avoid duplicate) */}
+                    {post.contentType && (
+                      <div
+                        style={{ display: "flex", justifyContent: "flex-end" }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 12,
+                            padding: "2px 8px",
+                            borderRadius: 12,
+                            background: "#f0f5ff",
+                            color: "#1d39c4",
+                          }}
+                        >
+                          {post.contentType.charAt(0).toUpperCase() +
+                            post.contentType.slice(1)}
+                        </span>
                       </div>
                     )}
-                    
-                    <Paragraph style={{ margin: 0 }}>
-                      {post.review}
-                    </Paragraph>
+
+                    <Space align="start" size={12} style={{ width: "100%" }}>
+                      {/* Cover art if available */}
+                      {post.imageUrl && (
+                        <img
+                          src={post.imageUrl}
+                          alt={
+                            post.name ||
+                            post.songTitle ||
+                            post.album ||
+                            post.playlistName ||
+                            "cover"
+                          }
+                          style={{
+                            width: 64,
+                            height: 64,
+                            borderRadius: 8,
+                            objectFit: "cover",
+                          }}
+                        />
+                      )}
+
+                      <Space
+                        direction="vertical"
+                        size={6}
+                        style={{ width: "100%" }}
+                      >
+                        {/* Title with robust fallbacks */}
+                        <div>
+                          <Text
+                            strong
+                            style={{ fontSize: 16, color: "#1890ff" }}
+                          >
+                            {post.name ||
+                              post.songTitle ||
+                              post.albumTitle ||
+                              post.playlistName ||
+                              "Untitled"}
+                          </Text>
+                          <br />
+
+                          {/* Track/album artist (not for playlists) */}
+                          {post.contentType !== "playlist" && post.artist || post.albumArtist && (
+                            <Text type="secondary">by {post.artist || post.albumArtist}</Text>
+                          )}
+
+                          {/* Album line (show if album given; for album posts, label it as album) */}
+                          {(post.album || post.contentType === "album") && (
+                            <>
+                              <br />
+                              <Text type="secondary" italic>
+                                {post.contentType === "album"
+                                  ? "album"
+                                  : "from"}{" "}
+                                "{post.album || post.name}"
+                              </Text>
+                            </>
+                          )}
+
+                          {/* Playlist owner / track count */}
+                          {post.contentType === "playlist" && (
+                            <>
+                              {post.ownerName && (
+                                <Text type="secondary">
+                                  by {post.ownerName}
+                                </Text>
+                              )}
+                              {typeof post.trackCount === "number" && (
+                                <>
+                                  <br />
+                                  <Text type="secondary">
+                                    {post.trackCount} tracks
+                                  </Text>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </div>
+
+                        {/* Rating */}
+                        {post.rating > 0 && (
+                          <div>
+                            <Rate disabled value={post.rating} allowHalf />
+                            <Text style={{ marginLeft: 8 }}>
+                              ({post.rating}/5)
+                            </Text>
+                          </div>
+                        )}
+
+                        {/* Review */}
+                        <Paragraph style={{ margin: 0 }}>
+                          {post.review}
+                        </Paragraph>
+
+                        {/* Spotify link + likes */}
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 8,
+                            alignItems: "center",
+                          }}
+                        >
+                          {post.spotifyUrl && (
+                            <Button
+                              size="small"
+                              href={post.spotifyUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Open in Spotify
+                            </Button>
+                          )}
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            ❤️ {post.likes || 0} likes
+                          </Text>
+                        </div>
+                      </Space>
+                    </Space>
                   </Space>
                 </div>
               }
             />
-            
+
             {/* Comments Section */}
             {showComments[post.id] && (
-              <div style={{ marginTop: 16, borderTop: '1px solid #f0f0f0', paddingTop: 16 }}>
+              <div
+                style={{
+                  marginTop: 16,
+                  borderTop: "1px solid #f0f0f0",
+                  paddingTop: 16,
+                }}
+              >
                 {/* Comment Input */}
                 <div style={{ marginBottom: 16 }}>
                   <TextArea
                     rows={2}
                     placeholder="Write a comment..."
-                    value={commentInputs[post.id] || ''}
-                    onChange={(e) => handleCommentInputChange(post.id, e.target.value)}
+                    value={commentInputs[post.id] || ""}
+                    onChange={(e) =>
+                      handleCommentInputChange(post.id, e.target.value)
+                    }
                     onPressEnter={(e) => {
                       e.preventDefault();
                       handleComment(post.id);
                     }}
                   />
-                  <div style={{ marginTop: 8, textAlign: 'right' }}>
-                    <Button 
-                      type="primary" 
+                  <div style={{ marginTop: 8, textAlign: "right" }}>
+                    <Button
+                      type="primary"
                       size="small"
                       onClick={() => handleComment(post.id)}
-                      disabled={!commentInputs[post.id] || commentInputs[post.id].trim() === ''}
+                      disabled={
+                        !commentInputs[post.id] ||
+                        commentInputs[post.id].trim() === ""
+                      }
                     >
                       Comment
                     </Button>
@@ -267,7 +435,10 @@ const PostFeed = ({ refreshTrigger }) => {
                       const getTime = (comment) => {
                         if (comment.createdAt instanceof Date) {
                           return comment.createdAt.getTime();
-                        } else if (comment.createdAt && comment.createdAt.seconds) {
+                        } else if (
+                          comment.createdAt &&
+                          comment.createdAt.seconds
+                        ) {
                           return comment.createdAt.seconds * 1000;
                         }
                         return 0;
@@ -277,24 +448,31 @@ const PostFeed = ({ refreshTrigger }) => {
                     renderItem={(comment) => (
                       <List.Item>
                         <List.Item.Meta
-                          avatar={<Avatar size="small" icon={<UserOutlined />} />}
+                          avatar={
+                            <Avatar size="small" icon={<UserOutlined />} />
+                          }
                           title={
                             <Space>
-                              <Text strong style={{ fontSize: '13px' }}>
+                              <Text strong style={{ fontSize: "13px" }}>
                                 {comment.userEmail}
                               </Text>
-                              <Text type="secondary" style={{ fontSize: '12px' }}>
-                                {comment.createdAt instanceof Date 
-                                  ? formatDate({ toDate: () => comment.createdAt })
-                                  : comment.createdAt && comment.createdAt.seconds
-                                    ? formatDate(comment.createdAt)
-                                    : 'Just now'
-                                }
+                              <Text
+                                type="secondary"
+                                style={{ fontSize: "12px" }}
+                              >
+                                {comment.createdAt instanceof Date
+                                  ? formatDate({
+                                      toDate: () => comment.createdAt,
+                                    })
+                                  : comment.createdAt &&
+                                    comment.createdAt.seconds
+                                  ? formatDate(comment.createdAt)
+                                  : "Just now"}
                               </Text>
                             </Space>
                           }
                           description={
-                            <Text style={{ fontSize: '14px' }}>
+                            <Text style={{ fontSize: "14px" }}>
                               {comment.text}
                             </Text>
                           }
@@ -305,7 +483,7 @@ const PostFeed = ({ refreshTrigger }) => {
                 )}
 
                 {(!post.comments || post.comments.length === 0) && (
-                  <Text type="secondary" style={{ fontSize: '14px' }}>
+                  <Text type="secondary" style={{ fontSize: "14px" }}>
                     No comments yet. Be the first to comment!
                   </Text>
                 )}
