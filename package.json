@@ -29,10 +29,11 @@
   },
 
   "scripts": {
-    "start": "concurrently \"npm run server\" \"react-scripts start\"",
+    "start": "serve -s build -l $PORT",
     "start:client": "react-scripts start",
     "start:server": "node src/server.js",
     "start:prod": "serve -s build -l $PORT",
+    "test:prod": "npm run build && concurrently \"npm run start:server\" \"serve -s build -l 3000\"",
     "server": "node src/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
