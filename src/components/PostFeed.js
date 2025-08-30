@@ -307,7 +307,7 @@ const PostFeed = ({ refreshTrigger }) => {
                           <br />
 
                           {/* Track/album artist (not for playlists) */}
-                          {post.contentType !== "playlist" && post.artist || post.albumArtist && (
+                          {post.contentType !== "playlist" && (post.artist || post.albumArtist) && (
                             <Text type="secondary">by {post.artist || post.albumArtist}</Text>
                           )}
 

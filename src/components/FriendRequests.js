@@ -1,12 +1,12 @@
 // src/components/FriendRequests.js
 import React, { useState, useEffect } from 'react';
-import { Card, List, Avatar, Button, Space, Typography, message, Spin } from 'antd';
+import { Card, List, Avatar, Button, Typography, message, Spin } from 'antd';
 import { UserOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
 
-const { Text, Title } = Typography;
+const { Text} = Typography;
 
 const FriendRequests = () => {
   const [user] = useAuthState(auth);

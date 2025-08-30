@@ -16,7 +16,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 const API_BASE = "http://127.0.0.1:8080";
 
@@ -31,7 +30,7 @@ const CreatePost = ({ onPostCreated }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [songOptions, setSongOptions] = useState([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [setIsAuthenticated] = useState(false);
   const [shareType, setShareType] = useState(SHARE_TYPES.SONG);
 
   useEffect(() => {

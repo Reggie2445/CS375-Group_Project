@@ -1,12 +1,12 @@
 // src/components/FriendsList.js
 import React, { useState, useEffect } from 'react';
-import { Card, List, Avatar, Button, Space, Typography, message, Spin, Popconfirm } from 'antd';
+import { Card, List, Avatar, Button, Typography, message, Spin, Popconfirm } from 'antd';
 import { UserOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import { collection, query, where, onSnapshot, doc, deleteDoc, or } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 const FriendsList = () => {
   const [user] = useAuthState(auth);

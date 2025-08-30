@@ -1,7 +1,7 @@
 // src/components/FriendsPage.js
 import React, { useState } from 'react';
 import { Tabs, Space } from 'antd';
-import { UserOutlined, UserAddOutlined, TeamOutlined, BellOutlined } from '@ant-design/icons';
+import { UserAddOutlined, TeamOutlined, BellOutlined } from '@ant-design/icons';
 import FriendSearch from './FriendSearch';
 import FriendRequests from './FriendRequests';
 import FriendsList from './FriendsList';
