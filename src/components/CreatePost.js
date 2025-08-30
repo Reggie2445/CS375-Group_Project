@@ -34,19 +34,19 @@ const CreatePost = ({ onPostCreated }) => {
   const [shareType, setShareType] = useState(SHARE_TYPES.SONG);
 
   useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/auth/status`, {
+          credentials: "include",
+        });
+        setIsAuthenticated(res.ok);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+
     checkAuthStatus();
   }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/auth/status`, {
-        credentials: "include",
-      });
-      setIsAuthenticated(res.ok);
-    } catch {
-      setIsAuthenticated(false);
-    }
-  };
 
   const searchItems = async (query) => {
     if (!query) return;
@@ -64,7 +64,7 @@ const CreatePost = ({ onPostCreated }) => {
       if (shareType === SHARE_TYPES.SONG) {
         const items = data.tracks?.items || [];
         options = items.map((t) => ({
-          value: t.id, 
+          value: t.id,
           label: `${t.name} — ${t.artists?.map((a) => a.name).join(", ")} — ${t.album?.name}`,
           meta: {
             id: t.id,
@@ -92,8 +92,8 @@ const CreatePost = ({ onPostCreated }) => {
         }));
       } else if (shareType === SHARE_TYPES.PLAYLIST) {
         const items = (data.playlists?.items || [])
-          .filter(Boolean)                 
-          .filter((p) => p?.id && p?.name); 
+          .filter(Boolean)
+          .filter((p) => p?.id && p?.name);
         options = items.map((p) => ({
           value: String(p.id),
           label: `${p.name} — by ${p.owner?.display_name ?? "Unknown"}`,
@@ -176,7 +176,7 @@ const CreatePost = ({ onPostCreated }) => {
     setLoading(true);
     try {
       const base = {
-        shareType, 
+        shareType,
         review: values.review,
         rating: values.rating || 0,
         userId: user.uid,
