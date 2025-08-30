@@ -4,7 +4,9 @@ import {Card,Typography,List,Avatar,Tag,Row,Col,Empty,Spin,Space,message,Select}
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const API_BASE = "http://127.0.0.1:8080";
+const API_BASE = process.env.NODE_ENV === "production" 
+  ? ""
+  : "http://127.0.0.1:8080";
 
 const TIME_RANGES = [
     { label: "Last 4 Weeks", value: "short_term" },

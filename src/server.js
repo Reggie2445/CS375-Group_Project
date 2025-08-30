@@ -30,9 +30,7 @@ app.use(cookieSession({
 
 const SPOTIFY_CLIENT_ID = env.client_id;
 const SPOTIFY_CLIENT_SECRET = env.client_secret;
-const SPOTIFY_REDIRECT_URI = process.env.NODE_ENV === "production"
-  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}/auth/callback`
-  : env.redirect_uri;
+const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || env.redirect_uri;
 
 const store = new Map();  // sid = { accessToken, refreshToken, expiresAt }
 const stateStore = new Map();
