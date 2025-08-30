@@ -3,7 +3,9 @@ import { Card, Avatar, Tag, Typography, Space, Skeleton, Button } from "antd";
 import { PlayCircleOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
-const API_BASE = "http://127.0.0.1:8080";
+const API_BASE = process.env.NODE_ENV === "production" 
+  ? ""
+  : "http://127.0.0.1:8080";
 
 const SpotifyMiniProfile = () => {
   const [me, setMe] = useState(null);
