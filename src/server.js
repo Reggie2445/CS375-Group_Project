@@ -8,7 +8,9 @@ import env from "./env.json" with { type: "json" };
 const app = express();
 
 app.use(cors({
-  origin: ["http://127.0.0.1:3000"],
+  origin: process.env.NODE_ENV === "production" 
+    ? true
+    : ["http://127.0.0.1:3000"],
   credentials: true
 }));
 
@@ -23,7 +25,9 @@ app.use(cookieSession({
 
 const SPOTIFY_CLIENT_ID = env.client_id;
 const SPOTIFY_CLIENT_SECRET = env.client_secret;
-const SPOTIFY_REDIRECT_URI = env.redirect_uri;
+const SPOTIFY_REDIRECT_URI = process.env.NODE_ENV === "production"
+  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}/auth/callback`
+  : env.redirect_uri;
 
 const store = new Map();  // sid = { accessToken, refreshToken, expiresAt }
 const stateStore = new Map();
@@ -128,7 +132,10 @@ app.get("/auth/callback", async (req, res) => {
     console.log("Tokens stored for session:", sessionId);
     console.log("Token store size:", store.size);
     
-    res.redirect("http://127.0.0.1:3000/main");
+    const redirectUrl = process.env.NODE_ENV === "production" 
+      ? "/main"
+      : "http://127.0.0.1:3000/main";
+    res.redirect(redirectUrl);
   } catch (e) {
     console.error("Token exchange failed:", e.response?.data || e.message);
     res.status(500).send("Token exchange failed");
@@ -276,4 +283,5 @@ app.get("/spotify/recent", async (req, res) => {
 
 
 
-app.listen(8080, () => console.log("Server running on http://127.0.0.1:8080"));
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));

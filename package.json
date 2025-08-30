@@ -17,7 +17,9 @@
     "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^7.7.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.1"
   },
 
   "comments": {
@@ -27,7 +29,10 @@
   },
 
   "scripts": {
-    "start": "HOST=127.0.0.1 react-scripts start",
+    "start": "concurrently \"npm run server\" \"react-scripts start\"",
+    "start:client": "react-scripts start",
+    "start:server": "node src/server.js",
+    "start:prod": "serve -s build -l $PORT",
     "server": "node src/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
