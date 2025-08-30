@@ -46,7 +46,8 @@ const CreatePost = ({ onPostCreated }) => {
     };
 
     checkAuthStatus();
-  }, []);
+  }, [setIsAuthenticated]);
+
 
   const searchItems = async (query) => {
     if (!query) return;
