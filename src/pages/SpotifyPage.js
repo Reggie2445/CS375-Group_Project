@@ -4,7 +4,8 @@ const { Title } = Typography;
 
 export default function SpotifyPage() {
   const handleLogin = () => {
-    window.location.href = "http://localhost:8080/auth/login"; // <-- backend route
+    const API_BASE = process.env.NODE_ENV === "production" ? "" : "http://localhost:8080";
+    window.location.href = `${API_BASE}/auth/login`;
   };
 
   return (
