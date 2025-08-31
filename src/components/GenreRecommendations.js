@@ -1,11 +1,10 @@
 // src/components/GenreRecommendations.js
 import React, { useState, useEffect } from 'react';
-import { Card, List, Avatar, Button, Typography, Spin, Tag, Space, Select } from 'antd';
+import { List, Avatar, Button, Spin, Tag, Space, Select } from 'antd';
 import { PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
-
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 const API_BASE = "http://127.0.0.1:8080";
 
@@ -21,7 +20,7 @@ const GenreRecommendations = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState('indie');
-  const [availableGenres, setAvailableGenres] = useState(MUSIC_GENRES);
+  // const [availableGenres, setAvailableGenres] = useState(MUSIC_GENRES); // Unused
 
   const fetchGenreRecommendations = async (genre) => {
     try {

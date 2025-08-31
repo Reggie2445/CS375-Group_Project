@@ -1,11 +1,10 @@
 // src/components/SimpleRecommendations.js
 import React, { useState, useEffect } from 'react';
-import { Card, List, Avatar, Button, Typography, Spin, Empty, Space } from 'antd';
-import { PlayCircleOutlined, HeartOutlined } from '@ant-design/icons';
+import { List, Avatar, Button, Typography, Spin, Empty, Space } from 'antd';
+import { PlayCircleOutlined } from '@ant-design/icons';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
-
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const API_BASE = "http://127.0.0.1:8080";
 
 const SimpleRecommendations = () => {

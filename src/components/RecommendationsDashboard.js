@@ -1,6 +1,6 @@
 // src/components/RecommendationsDashboard.js
 import React, { useState } from 'react';
-import { Collapse, Typography, Space, Badge } from 'antd';
+import { Collapse, Typography, Space } from 'antd';
 import { UserOutlined, SearchOutlined, CaretRightOutlined } from '@ant-design/icons';
 import SimpleRecommendations from './SimpleRecommendations';
 import GenreRecommendations from './GenreRecommendations';
