@@ -17,6 +17,7 @@ import PostFeed from "../components/PostFeed";
 import UserPosts from "../components/UserPosts";
 import FriendsPage from "../components/FriendsPage";
 import SpotifyTrendsPage from "../components/Trends";
+import RecommendationsDashboard from "../components/RecommendationsDashboard";
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;

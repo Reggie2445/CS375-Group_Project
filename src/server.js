@@ -285,7 +285,98 @@ app.get("/spotify/recent", async (req, res) => {
   }
 });
 
-
+// Get recommendations based on user's listening history
+app.get("/alternative-recommendations", async (req, res) => {
+  try {
+    const token = await ensureAccessToken(req);
+    const { limit = 20 } = req.query;
+    
+    // Get user's top artists
+    const topArtistsUrl = "https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=5";
+    const topArtistsResponse = await axios.get(topArtistsUrl, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    });
+    
+    const topArtists = topArtistsResponse.data.items || [];
+    console.log('🎤 Top artists for alternative recommendations:', topArtists.length);
+    
+    if (topArtists.length === 0) {
+      return res.json({ tracks: [], message: "No listening history found" });
+    }
+    
+    const allTracks = [];
+    
+    // For each top artist, get their albums and tracks
+    for (const artist of topArtists.slice(0, 3)) {
+      try {
+        const searchUrl = `https://api.spotify.com/v1/search?q=artist:"${encodeURIComponent(artist.name)}"&type=track&limit=10&market=US`;
+        const searchResponse = await axios.get(searchUrl, { 
+          headers: { Authorization: `Bearer ${token}` } 
+        });
+        
+        const tracks = searchResponse.data.tracks?.items || [];
+        tracks.forEach(track => {
+          if (track && track.id) {
+            allTracks.push({
+              ...track,
+              recommendationReason: `More from ${artist.name}`,
+              similarity: Math.random() * 0.3 + 0.7
+            });
+          }
+        });
+        
+        const albumsUrl = `https://api.spotify.com/v1/artists/${artist.id}/albums?include_groups=album&market=US&limit=3`;
+        const albumsResponse = await axios.get(albumsUrl, { 
+          headers: { Authorization: `Bearer ${token}` } 
+        });
+        
+        const albums = albumsResponse.data.items || [];
+        for (const album of albums) {
+          try {
+            const albumTracksUrl = `https://api.spotify.com/v1/albums/${album.id}/tracks?market=US&limit=5`;
+            const albumTracksResponse = await axios.get(albumTracksUrl, { 
+              headers: { Authorization: `Bearer ${token}` } 
+            });
+            
+            const albumTracks = albumTracksResponse.data.items || [];
+            albumTracks.forEach(track => {
+              if (track && track.id) {
+                allTracks.push({
+                  ...track,
+                  album: album,
+                  recommendationReason: `From ${album.name} by ${artist.name}`,
+                  similarity: Math.random() * 0.2 + 0.8
+                });
+              }
+            });
+          } catch (albumError) {
+            console.warn('Failed to fetch album tracks:', albumError.message);
+          }
+        }
+        
+      } catch (artistError) {
+        console.warn(`Failed to get tracks for artist ${artist.name}:`, artistError.message);
+      }
+    }
+    
+    const uniqueTracks = allTracks.filter((track, index, self) => 
+      index === self.findIndex(t => t.id === track.id)
+    );
+    
+    uniqueTracks.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+    
+    console.log(`✅ Generated ${uniqueTracks.length} alternative recommendations`);
+    res.json({ 
+      tracks: uniqueTracks.slice(0, parseInt(limit)),
+      method: "artist-based-discovery",
+      totalFound: uniqueTracks.length
+    });
+    
+  } catch (error) {
+    console.error('❌ Alternative recommendations error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Serve static files from React build in production
 if (process.env.NODE_ENV === "production") {
