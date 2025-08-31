@@ -32,6 +32,7 @@ import {
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
+import RecommendationsDashboard from "./RecommendationsDashboard";
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -197,6 +198,9 @@ const PostFeed = ({ refreshTrigger }) => {
           Refresh Feed
         </Button>
       </div>
+
+      {/* Music Recommendations */}
+      <RecommendationsDashboard />
 
       {posts.map((post) => {
         console.log("Post Object", post);
