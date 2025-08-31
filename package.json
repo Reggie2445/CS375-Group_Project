@@ -29,7 +29,6 @@
   },
 
   "scripts": {
-    "start": "HOST=127.0.0.1 react-scripts start",
     "start:client": "react-scripts start",
     "start:server": "node src/server.js",
     "start:prod": "serve -s build -l $PORT",
