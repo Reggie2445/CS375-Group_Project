@@ -29,6 +29,7 @@
   },
 
   "scripts": {
+    "start": "node src/server.js",
     "start:client": "react-scripts start",
     "start:server": "node src/server.js",
     "start:prod": "serve -s build -l $PORT",
