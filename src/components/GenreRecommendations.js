@@ -1,6 +1,6 @@
 // src/components/GenreRecommendations.js
 import React, { useState, useEffect } from 'react';
-import { List, Avatar, Button, Spin, Tag, Space, Select } from 'antd';
+import { List, Avatar, Button, Spin, Tag, Space, Select, Typography } from 'antd';
 import { PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
@@ -107,7 +107,7 @@ const GenreRecommendations = () => {
             style={{ width: 120 }}
             size="small"
           >
-            {availableGenres.map(genre => (
+            {MUSIC_GENRES.map(genre => (
               <Option key={genre} value={genre}>
                 {genre.charAt(0).toUpperCase() + genre.slice(1)}
               </Option>
