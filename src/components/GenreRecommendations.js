@@ -6,7 +6,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
 const { Text } = Typography;
 const { Option } = Select;
-const API_BASE = "http://127.0.0.1:8080";
+const API_BASE = process.env.NODE_ENV === "production"
+  ? "https://serene-laughter-production.up.railway.app"
+  : "http://127.0.0.1:8080";
 
 // Popular genres to explore
 const MUSIC_GENRES = [
