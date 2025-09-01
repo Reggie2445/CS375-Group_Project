@@ -109,17 +109,12 @@ const MainPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/main");
-    }
-  }, [loading, user, navigate]);
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
   if (!user) {
+    navigate("/");
     return null;
   }
 
