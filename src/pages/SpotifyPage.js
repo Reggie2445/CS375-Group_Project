@@ -4,7 +4,9 @@ const { Title } = Typography;
 
 export default function SpotifyPage() {
   const handleLogin = () => {
-    const API_BASE = process.env.NODE_ENV === "production" ? "https://serene-laughter-production.up.railway.app" : "http://localhost:8080";
+    const API_BASE = process.env.NODE_ENV === "production"
+  ? ""
+  : "http://127.0.0.1:8080";
     window.location.href = `${API_BASE}/auth/login`;
   };
 
