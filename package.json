@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.26.7",
     "axios": "^1.11.0",
+    "concurrently": "^8.2.2",
     "cookie-session": "^2.1.1",
     "cors": "^2.8.5",
     "firebase": "^12.0.0",
@@ -17,20 +18,17 @@
     "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^7.7.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    "concurrently": "^8.2.2",
-    "serve": "^14.2.1"
+    "serve": "^14.2.1",
+    "web-vitals": "^2.1.4"
   },
-
   "comments": {
     "start_note": "Remember to update version before release",
     "windows_start": "react-scripts start",
     "linux_start": "HOST=127.0.0.1 react-scripts start"
   },
-
   "scripts": {
     "start": "react-scripts start",
-    "start:client": "react-scripts start",
+    "start:client": "cross-env HOST=127.0.0.1 react-scripts start",
     "start:server": "node src/server.js",
     "start:prod": "node src/server.js",
     "test:prod": "npm run build && concurrently \"npm run start:server\" \"serve -s build -l 3000\"",
@@ -56,5 +54,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0"
   }
 }
