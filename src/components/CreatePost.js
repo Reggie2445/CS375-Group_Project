@@ -17,7 +17,7 @@ import { auth, db } from "../firebase";
 
 const { TextArea } = Input;
 
-const API_BASE = process.env.NODE_ENV === "production" 
+const API_BASE = process.env.NODE_ENV === "production"
   ? ""
   : "http://127.0.0.1:8080";
 
@@ -32,7 +32,7 @@ const CreatePost = ({ onPostCreated }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [songOptions, setSongOptions] = useState([]);
-  const [setIsAuthenticated] = useState(false);
+  const [, setIsAuthenticated] = useState(false);
   const [shareType, setShareType] = useState(SHARE_TYPES.SONG);
 
   useEffect(() => {
@@ -49,6 +49,7 @@ const CreatePost = ({ onPostCreated }) => {
 
     checkAuthStatus();
   }, [setIsAuthenticated]);
+
 
 
   const searchItems = async (query) => {
